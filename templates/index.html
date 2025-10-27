@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+
+{% block title %}Bienvenue | SimplexLab{% endblock %}
+
+{% block styles %}
+<style>
+    :root {
+        --color-primary: #6a11cb; --color-secondary: #2575fc;
+        --color-text: #ffffff; --color-button: #ff6a00;
+        --color-button-hover: #e05e00; --transition-time: 0.5s;
+    }
+    body {
+        font-family: 'Poppins', sans-serif; margin: 0; display: flex;
+        justify-content: center; align-items: center; min-height: 100vh;
+        color: var(--color-text);
+        background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+        background-size: 200% 200%;
+        animation: gradient-shift 15s ease infinite;
+        opacity: 1; transition: opacity var(--transition-time) ease-in-out;
+    }
+    .fade-out { opacity: 0; }
+    @keyframes gradient-shift {
+        0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; }
+    }
+    .landing-container {
+        text-align: center; padding: 40px 20px; max-width: 90%;
+        opacity: 0; transform: translateY(20px);
+        animation: fadeIn 1s ease-out forwards; animation-delay: 0.3s;
+    }
+    @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+    h1 { font-size: clamp(2.5rem, 8vw, 5rem); font-weight: 800; }
+    p { font-size: clamp(1rem, 4vw, 1.5rem); margin-bottom: 40px; font-weight: 300; }
+    .start-button {
+        display: inline-block; padding: 15px 40px; font-size: 1.25rem;
+        font-weight: 600; color: var(--color-text); background-color: var(--color-button);
+        border: none; border-radius: 50px; cursor: pointer; text-decoration: none;
+        transition: all 0.3s ease; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    .start-button:hover, .start-button:focus { background-color: var(--color-button-hover); transform: scale(1.05); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="landing-container">
+    <h1>Bienvenue sur <strong>SimplexLab</strong> 🧪</h1>
+    <p>Votre outil pour résoudre vos problèmes d'optimisation par la méthode du simplexe.</p>
+    <a href="#" class="start-button" role="button" onclick="startTransition(event)">Commencer</a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function startTransition(event) {
+        event.preventDefault(); 
+        document.body.classList.add('fade-out');
+        setTimeout(() => {
+            window.location.href = "{{ url_for('calculator') }}";
+        }, 500);
+    }
+</script>
+{% endblock %}

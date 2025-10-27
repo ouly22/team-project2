@@ -1,0 +1,152 @@
+{% extends "layout.html" %}
+
+{% set title = "Calculateur Simplexe" %}
+{% set use_bootstrap = True %}
+{% set dark_theme = True %}
+
+{% block styles %}
+<style>
+    body { font-family: 'Inter', sans-serif; background: navy; color: #c9d1d9; }
+    .card { background-color: #161b22; border: 1px solid #30363d; }
+    .form-control, .form-select { background-color: #0d1117; border-color: #30363d; color: #c9d1d9; }
+    .form-control:focus, .form-select:focus { border-color: #58a6ff; box-shadow: 0 0 0 0.25rem rgba(88, 166, 255, 0.25); }
+    .result-value { font-size: 2.5rem; font-weight: 700; color: #58a6ff; }
+    .btn-primary { --bs-btn-bg: #238636; --bs-btn-border-color: #238636; }
+    sub { bottom: -0.5em; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-4 my-md-5">
+    <header class="text-center mb-5">
+        <h1 class="display-5 fw-bold">Calculateur d'Algorithme Simplexe</h1>
+        <p class="lead text-muted">Résolvez vos problèmes de programmation linéaire (Maximisation).</p>
+    </header>
+
+    {% if error %}
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+    {% endif %}
+
+    <div class="card shadow-sm mb-5">
+        <div class="card-header"><h2 class="h5 mb-0">1. Définir les Dimensions</h2></div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('calculator') }}" class="row g-3 align-items-end">
+                <div class="col-md">
+                    <label for="n" class="form-label">Nombre de variables (X₁, X₂, ...)</label>
+                    <input type="number" class="form-control" name="n" id="n" value="{{ n }}" min="1" required>
+                </div>
+                <div class="col-md">
+                    <label for="m" class="form-label">Nombre de contraintes</label>
+                    <input type="number" class="form-control" name="m" id="m" value="{{ m }}" min="1" required>
+                </div>
+                <div class="col-md-auto">
+                    <button type="submit" name="submit_dimensions" class="btn btn-secondary w-100">Définir</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if step == 2 %}
+    <div class="card shadow-sm">
+        <div class="card-header"><h2 class="h5 mb-0">2. Saisir les Données</h2></div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('calculator') }}">
+                <input type="hidden" name="n" value="{{ n }}">
+                <input type="hidden" name="m" value="{{ m }}">
+
+                <fieldset class="mb-4">
+                    <legend class="h6">Fonction Objectif : Maximiser Z</legend>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <span class="fs-4">Z =</span>
+                        {% for j in range(n) %}
+                        <div class="input-group" style="width: 150px;">
+                            <input type="number" step="any" name="c{{ j }}" required value="{{ input_data.c[j] if input_data }}" class="form-control text-center">
+                            <span class="input-group-text fw-bold">X<sub>{{ j+1 }}</sub></span>
+                        </div>
+                        {% if not loop.last %}<span class="fs-4">+</span>{% endif %}
+                        {% endfor %}
+                    </div>
+                </fieldset>
+                
+                <fieldset class="mb-4">
+                    <legend class="h6">Contraintes</legend>
+                    <div class="vstack gap-3">
+                    {% for i in range(m) %}
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                        {% for j in range(n) %}
+                            <div class="input-group" style="width: 150px;">
+                                <input type="number" step="any" name="a{{ i }}{{ j }}" required value="{{ input_data.A[i][j] if input_data }}" class="form-control text-center">
+                                <span class="input-group-text fw-bold">X<sub>{{ j+1 }}</sub></span>
+                            </div>
+                            {% if not loop.last %}<span class="fs-4">+</span>{% endif %}
+                        {% endfor %}
+                            <span class="fs-3 mx-2">&le;</span>
+                            <input type="number" step="any" name="b{{ i }}" required value="{{ input_data.b[i] if input_data }}" class="form-control" style="width: 120px;">
+                        </div>
+                    {% endfor %}
+                    </div>
+                </fieldset>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-lg px-5">Calculer la Solution</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if result %}
+    <div class="card shadow-sm mt-5">
+        <div class="card-header bg-primary bg-opacity-25 border-primary">
+            <h2 class="h5 mb-0 text-white">Résultats de l'Optimisation</h2>
+        </div>
+        <div class="card-body">
+            {% if result.error %}
+            <div class="alert alert-warning">
+                <h4 class="alert-heading">Erreur de calcul :</h4>
+                <p>{{ result.error }}</p>
+            </div>
+            {% else %}
+             <div class="text-center p-4 rounded bg-dark mb-5">
+                <p class="text-muted mb-1">VALEUR MAXIMALE (Z<sub>max</sub>)</p>
+                <p class="result-value">{{ result.z_max }}</p>
+                <div class="d-flex justify-content-center gap-4 mt-3 flex-wrap">
+                    {% for val in result.solution %}
+                    <p class="fs-5 mb-0"><span class="fw-bold">X<sub>{{ loop.index }}</sub></span> = {{ val }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="vstack gap-5">
+            {% for title, tableau in [("Tableau Simplexe Initial", result.initial_tableau), ("Tableau Simplexe Final", result.final_tableau)] %}
+                <div>
+                    <h3 class="h5 mb-3">{{ title }}</h3>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover text-center align-middle">
+                            <thead>
+                                <tr>
+                                    {% for j in range(result.n_vars) %}<th>X<sub>{{ j + 1 }}</sub></th>{% endfor %}
+                                    {% for i in range(result.m_constr) %}<th>S<sub>{{ i + 1 }}</sub></th>{% endfor %}
+                                    <th class="bg-dark">Solution</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                            {% for row in tableau %}
+                                <tr class="{% if loop.last %}table-active fw-bold{% endif %}">
+                                {% for cell in row %}
+                                    <td class="{% if loop.last %}bg-dark bg-opacity-50{% endif %}">{{ cell }}</td>
+                                {% endfor %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
