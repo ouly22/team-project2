@@ -5,46 +5,116 @@
 {% block styles %}
 <style>
     :root {
-        --color-primary: #6a11cb; --color-secondary: #2575fc;
-        --color-text: #ffffff; --color-button: #ff6a00;
-        --color-button-hover: #e05e00; --transition-time: 0.5s;
+        --color-primary: #6a11cb; 
+        --color-secondary: #2575fc;
+         
+        --color-button: #ff6a00;
+        --color-button-hover: #e05e00; 
+        --transition-time: 0.5s;
     }
     body {
-        font-family: 'Poppins', sans-serif; margin: 0; display: flex;
-        justify-content: center; align-items: center; min-height: 100vh;
+        font-family: 'Poppins', sans-serif; 
+        margin: 0; display: flex;
+        justify-content: center; 
+        align-items: center; 
+        min-height: 100vh;
         color: var(--color-text);
-        background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+        background: url("/static/background.jpg");
         background-size: 200% 200%;
         animation: gradient-shift 15s ease infinite;
         opacity: 1; transition: opacity var(--transition-time) ease-in-out;
+        overflow: hidden;
     }
     .fade-out { opacity: 0; }
     @keyframes gradient-shift {
         0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; }
     }
     .landing-container {
-        text-align: center; padding: 40px 20px; max-width: 90%;
-        opacity: 0; transform: translateY(20px);
-        animation: fadeIn 1s ease-out forwards; animation-delay: 0.3s;
+        text-align: center; 
+        padding: 40px 20px; 
+        max-width: 90%;
+        opacity: 0; 
+        transform: translateY(20px);
+        animation: fadeIn 1s ease-out forwards; 
+        animation-delay: 0.3s;
+        position: relative; z-index: 10;
     }
     @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
     h1 { font-size: clamp(2.5rem, 8vw, 5rem); font-weight: 800; }
     p { font-size: clamp(1rem, 4vw, 1.5rem); margin-bottom: 40px; font-weight: 300; }
     .start-button {
-        display: inline-block; padding: 15px 40px; font-size: 1.25rem;
-        font-weight: 600; color: var(--color-text); background-color: var(--color-button);
-        border: none; border-radius: 50px; cursor: pointer; text-decoration: none;
-        transition: all 0.3s ease; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    display: inline-block;
+    padding: 25px 60px;
+    font-size: 21px;
+    font-family: 'Josefin Sans', 'Space Grotesk', sans-serif;
+    font-weight: 900; 
+    color: #000000; 
+    background-color: rgba(255, 255, 255, 0.5); 
+    border: white 20px; 
+    border-radius: 35px;
+    cursor: pointer; 
+    text-decoration: none;
+    transition: all 0.3s ease; 
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+    .start-button:hover, .start-button:focus {
+         background-color: rgb(255, 255, 255); 
+         transform: scale(1.05); }
+
+    .title{
+        color:white;
     }
-    .start-button:hover, .start-button:focus { background-color: var(--color-button-hover); transform: scale(1.05); }
+    .named{
+        text-decoration: black;
+    }
+    .symbol {
+        position: absolute;
+        font-weight: 900; 
+        font-size: 10rem; /* Increased from 2rem for bigger symbols */
+        color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+        animation: float 8s linear infinite, shine 2s ease-in-out infinite;
+        transform-style: preserve-3d;
+        user-select: none;
+        top: -10vh; /* Start slightly above the viewport to vary entry points */
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    }
+    .symbol:nth-child(1) { left: 5%; top: 10vh; animation-delay: 0s; }
+    .symbol:nth-child(2) { left: 25%; top: 20vh; animation-delay: 0s; }
+    .symbol:nth-child(3) { left: 45%; top: 5vh; animation-delay: 0s; }
+    .symbol:nth-child(4) { left: 65%; top: 15vh; animation-delay: 0s; }
+    .symbol:nth-child(5) { left: 85%; top: 25vh; animation-delay: 0s; }
+    .symbol:nth-child(6) { left: 10%; top: 30vh; animation-delay:0s; }
+    .symbol:nth-child(7) { left: 35%; top: 35vh; animation-delay:0s; }
+    .symbol:nth-child(8) { left: 55%; top: 40vh; animation-delay: 0s; }
+    .symbol:nth-child(9) { left: 75%; top: 45vh; animation-delay: 0s; }
+    .symbol:nth-child(10) { left: 20%; top: 50vh; animation-delay: 0s; }
+
+     @keyframes float {
+        0% { transform: translateY(100vh) translateX(-5) rotate(0deg); opacity: 0.8; } /* Start visible */
+        50% { transform: translateY(50vh) translateX(10vw) rotate(180deg); }
+        100% { transform: translateY(-10vh) translateX(20vw) rotate(360deg); opacity: 0; }
+    }
+
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="landing-container">
-    <h1>Bienvenue sur <strong>SimplexLab</strong> 🧪</h1>
-    <p>Votre outil pour résoudre vos problèmes d'optimisation par la méthode du simplexe.</p>
+    <h1 class="title">Bienvenue sur <strong class="named">SYMOPLEX</strong></h1>
+    <p></p>
     <a href="#" class="start-button" role="button" onclick="startTransition(event)">Commencer</a>
+</div>
+<div class="floating-symbols">
+    <div class="symbol">∑</div>
+    <div class="symbol">∫</div>
+    <div class="symbol">π</div>
+    <div class="symbol">√</div>
+    <div class="symbol">∞</div>
+    <div class="symbol">Δ</div>
+    <div class="symbol">∇</div>
+    <div class="symbol">α</div>
+    <div class="symbol">β</div>
+    <div class="symbol">γ</div>
 </div>
 {% endblock %}
 
