@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solveur Simplex par Flask</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f7f9; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1 { color: #333; text-align: center; }
+        textarea { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
+        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; display: block; width: 100%; }
+        button:hover { background-color: #0056b3; }
+        .resultat { margin-top: 25px; padding: 20px; border-radius: 4px; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .example { margin-top: 15px; padding: 10px; border: 1px dashed #aaa; border-radius: 4px; font-size: 0.9em; background-color: #eee; }
+        .status-optimal { font-weight: bold; color: green; }
+        .status-echec, .status-erreur { font-weight: bold; color: red; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Solveur de Problèmes Simplex (FLASK + SciPy)</h1>
+        
+        <form method="POST" action="/">
+            <label for="simplex_problem">Entrez votre problème Simplex (Max/Min | Contrainte 1 | Contrainte 2...):</label>
+            <textarea id="simplex_problem" name="simplex_problem" rows="5" required>{{ input_text }}</textarea>
+            
+            <div class="example">
+                **Format d'exemple (pour deux variables x et y, et contraintes $\le$):**<br>
+                `max 3x + 4y | 1x + 1y <= 10 | 2x + 1y <= 15`
+            </div>
+            
+            <button type="submit">Résoudre</button>
+        </form>
+
+        {% if resultat %}
+            <div class="resultat {% if resultat.statut == 'Optimal' %}success{% else %}error{% endif %}">
+                <h2>Résultat : <span class="status-{{ resultat.statut|lower }}">{{ resultat.statut }}</span></h2>
+                <p><strong>Message:</strong> {{ resultat.message }}</p>
+                
+                {% if resultat.statut == 'Optimal' %}
+                    <p>
+                        **Valeur Optimale (Z):** <span style="font-size: 1.2em; color: #007bff;">{{ resultat.valeur_optimale }}</span>
+                    </p>
+                    <p>
+                        **Variables à l'optimum :**<br>
+                        x = {{ resultat.variables.x }}<br>
+                        y = {{ resultat.variables.y }}
+                    </p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
