@@ -6,13 +6,23 @@
 
 {% block styles %}
 <style>
-    body { font-family: 'Inter', sans-serif; 
-    background: navy; 
-    color: #c9d1d9; }
+    body { 
+    background: url("/static/resize.jpg") center/cover no-repeat; 
+    margin: 0;
+    min-height: 100vh; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+ 
 
     .card { 
-     background-color: #161b22; 
-     border: 1px solid #30363d; }
+     background-color: rgba(0,0,0,0.6); 
+     border: 3px solid #ffffff; 
+     
+    }
 
     .form-control, .form-select { 
         background-color: #0d1117; 
@@ -28,12 +38,39 @@
         font-weight: 700; color: #58a6ff; }
 
     .btn-primary { 
-        --bs-btn-bg: #238636; 
-        --bs-btn-border-color: #238636; }
+        --bs-btn-bg: #110d0d; 
+        --bs-btn-border-color: #9393a8; 
+        border:white;
+        border-radius:10px;
+
+    }
+    .btn-primary:hover {
+    transform: translateY(-4px);
+    background: #6f7c5e;
+  }
 
     sub { 
         bottom: -0.5em;
          }
+    
+       .display-5 fw-bold{
+        font-family: 'Asset', sans-serif;
+        font-size: 20rem;
+
+
+           
+
+       }
+       .lead text-muted{
+        color:#b1cce7;
+       }
+
+       @media (max-width: 768px) {
+      .display-5.fw-bold {
+          font-size: 5rem !important; /* Smaller on mobile */
+      }
+  }
+
 </style>
 
 {% endblock %}
@@ -41,8 +78,8 @@
 {% block content %}
 <div class="container my-4 my-md-5">
     <header class="text-center mb-5">
-        <h1 class="display-5 fw-bold">Calculateur d'Algorithme Simplexe</h1>
-        <p class="lead text-muted">Résolvez vos problèmes de programmation linéaire (Maximisation).</p>
+        <h1 class="display-5 fw-bold"><strong>Calculateur d'Algorithme Simplexe<strong></h1>
+        <p class="lead text-muted">Résolvez vos problèmes de programmation linéaire <strong>(Maximisation).</strong></p>
     </header>
 
     {% if error %}
