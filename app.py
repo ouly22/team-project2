@@ -38,6 +38,9 @@ def simplexe(c: List[float], A: List[List[float]], b: List[float]) -> Dict[str, 
         iteration_limit = 1000
         iterations = 0
 
+        # NEW: Store pivot history
+        pivot_history = []
+
         # Phase 2 de l'algorithme du simplexe
         while np.min(tableau[-1, :-1]) < -1e-6 and iterations < iteration_limit:
             # 1. Choix de la colonne pivot (variable entrante)
@@ -54,8 +57,28 @@ def simplexe(c: List[float], A: List[List[float]], b: List[float]) -> Dict[str, 
             ratios[positive_pivot_col] = tableau[:-1, -1][positive_pivot_col] / tableau[:-1, pivot_col_idx][positive_pivot_col]
             pivot_row_idx = np.argmin(ratios)
             
-            # 3. Pivotage de Gauss-Jordan
+            # NEW: Record pivot information before performing the operation
             pivot_element = tableau[pivot_row_idx, pivot_col_idx]
+            
+            # Determine variable names for better display
+            if pivot_col_idx < n_vars:
+                entering_var = f"X{pivot_col_idx + 1}"
+            else:
+                entering_var = f"S{pivot_col_idx - n_vars + 1}"
+                
+            leaving_var = f"S{pivot_row_idx + 1}"
+            
+            pivot_history.append({
+                'iteration': iterations + 1,
+                'pivot_row': pivot_row_idx,
+                'pivot_col': pivot_col_idx,
+                'pivot_element': round(pivot_element, 4),
+                'entering_var': entering_var,
+                'leaving_var': leaving_var,
+                'tableau_before': np.copy(tableau).round(4).tolist()  # Store tableau state before pivot
+            })
+            
+            # 3. Pivotage de Gauss-Jordan
             tableau[pivot_row_idx, :] /= pivot_element
             
             for i in range(m_constr + 1):
@@ -83,7 +106,10 @@ def simplexe(c: List[float], A: List[List[float]], b: List[float]) -> Dict[str, 
             "initial_tableau": initial_tableau.round(4).tolist(),
             "final_tableau": tableau.round(4).tolist(),
             "n_vars": n_vars,
-            "m_constr": m_constr
+            "m_constr": m_constr,
+            # NEW: Include pivot history in results
+            "pivot_history": pivot_history,
+            "total_iterations": iterations
         }
     except Exception as e:
         return {"error": f"Une erreur de calcul est survenue : {e}"}
