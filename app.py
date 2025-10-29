@@ -29,8 +29,8 @@ def simplexe(c: List[float], A: List[List[float]], b: List[float]) -> Dict[str, 
         slack_vars = np.eye(m_constr)
         tableau = np.hstack((A_np, slack_vars, b_np.reshape(-1, 1)))
         
-        # Ajout de la ligne de la fonction objectif (Z)
-        z_row = np.hstack((-c_np, np.zeros(m_constr + 1)))
+        # Ajout de la ligne de la fonction objectif (Z) - CHANGED: removed negative sign
+        z_row = np.hstack((c_np, np.zeros(m_constr + 1)))
         tableau = np.vstack((tableau, z_row))
         
         initial_tableau = np.copy(tableau)
@@ -41,10 +41,10 @@ def simplexe(c: List[float], A: List[List[float]], b: List[float]) -> Dict[str, 
         # NEW: Store pivot history
         pivot_history = []
 
-        # Phase 2 de l'algorithme du simplexe
-        while np.min(tableau[-1, :-1]) < -1e-6 and iterations < iteration_limit:
-            # 1. Choix de la colonne pivot (variable entrante)
-            pivot_col_idx = np.argmin(tableau[-1, :-1])
+        # Phase 2 de l'algorithme du simplexe - CHANGED: conditions for maximization
+        while np.max(tableau[-1, :-1]) > 1e-6 and iterations < iteration_limit:
+            # 1. Choix de la colonne pivot (variable entrante) - CHANGED: argmax instead of argmin
+            pivot_col_idx = np.argmax(tableau[-1, :-1])
             
             # 2. Choix de la ligne pivot (variable sortante) via le test du ratio
             ratios = np.full(m_constr, np.inf)
@@ -66,7 +66,7 @@ def simplexe(c: List[float], A: List[List[float]], b: List[float]) -> Dict[str, 
             else:
                 entering_var = f"S{pivot_col_idx - n_vars + 1}"
                 
-            leaving_var = f"S{pivot_row_idx + 1}"
+            leaving_var = f"e{pivot_row_idx + 1}"
             
             pivot_history.append({
                 'iteration': iterations + 1,
@@ -102,7 +102,7 @@ def simplexe(c: List[float], A: List[List[float]], b: List[float]) -> Dict[str, 
 
         return {
             "solution": solution.round(4).tolist(),
-            "z_max": round(tableau[-1, -1], 4),
+            "z_max": round(abs(tableau[-1, -1]), 4),
             "initial_tableau": initial_tableau.round(4).tolist(),
             "final_tableau": tableau.round(4).tolist(),
             "n_vars": n_vars,

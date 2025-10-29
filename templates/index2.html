@@ -211,8 +211,8 @@
                             <thead>
                                 <tr>
                                     {% for j in range(result.n_vars) %}<th>X<sub>{{ j + 1 }}</sub></th>{% endfor %}
-                                    {% for i in range(result.m_constr) %}<th>S<sub>{{ i + 1 }}</sub></th>{% endfor %}
-                                    <th class="bg-dark">Solution</th>
+                                    {% for i in range(result.m_constr) %}<th>e<sub>{{ i + 1 }}</sub></th>{% endfor %}
+                                    <th class="bg-dark">2ème membre</th>
                                 </tr>
                             </thead>
                                                  <tbody class="table-group-divider">
