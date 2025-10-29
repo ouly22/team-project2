@@ -30,40 +30,65 @@
         color: #c9d1d9; }
 
     .form-control:focus, .form-select:focus { 
-        border-color: #58a6ff; 
+        border-color: #1a2b3d; 
         box-shadow: 0 0 0 0.25rem rgba(88, 166, 255, 0.25); }
 
     .result-value { 
         font-size: 2.5rem; 
-        font-weight: 700; color: #58a6ff; }
+        font-weight: 700; color: #91afd1; }
 
     .btn-primary { 
         --bs-btn-bg: #110d0d; 
         --bs-btn-border-color: #9393a8; 
         border:white;
         border-radius:10px;
+        --bs-btn-lg:#110d0d;
+        
 
     }
     .btn-primary:hover {
     transform: translateY(-4px);
-    background: #6f7c5e;
+    background: #5a5c58;
   }
 
     sub { 
         bottom: -0.5em;
          }
     
-       .display-5 fw-bold{
-        font-family: 'Asset', sans-serif;
-        font-size: 20rem;
+        .display-5 {
+       font-family: 'Asset', sans-serif;
+       font-size: 3rem;
+       color: rgb(255, 255, 255);  
+       
+       
+   }
+       .lead {
+        font-family:'Zalando Sans Expanded';
+       color: #000000; 
+       background-color: rgba(255, 254, 254, 0.5); 
+       border-radius: 25px;  
+       padding: 1rem; 
+}
+     .btn btn-primary btn-lg px-5{
+         --bs-btn-border-color:#9393a8;
 
+     }
 
-           
+     .btn-primary:hover {
+    transform: translateY(-4px);
+    background: #6b6d68;
+  }
+     .table-warning,
+     .bg-warning,
+     .bg-warning.bg-opacity-25 {
+     background-color:rgba(100, 154, 224, 0.4) !important;  
+     border-color: #649ae0 !important;
+}
+  .text-success,
+  .text-danger {
+  color: #11e7c4 !important; /* bright blue instead of green */
+}
 
-       }
-       .lead text-muted{
-        color:#b1cce7;
-       }
 
        @media (max-width: 768px) {
       .display-5.fw-bold {
@@ -78,8 +103,9 @@
 {% block content %}
 <div class="container my-4 my-md-5">
     <header class="text-center mb-5">
-        <h1 class="display-5 fw-bold"><strong>Calculateur d'Algorithme Simplexe<strong></h1>
-        <p class="lead text-muted">Résolvez vos problèmes de programmation linéaire <strong>(Maximisation).</strong></p>
+        <h1 class="display-5" style="text-indent: 10px;"><strong>Calculateur d'Algorithme
+             Simplexe<strong></h1>
+        <p class="lead ">Résolvez vos problèmes de programmation linéaire <strong>(Maximisation).</strong></p>
     </header>
 
     {% if error %}
@@ -189,11 +215,22 @@
                                     <th class="bg-dark">Solution</th>
                                 </tr>
                             </thead>
-                            <tbody class="table-group-divider">
-                            {% for row in tableau %}
+                                                 <tbody class="table-group-divider">
+                            {% for row_index in range(tableau|length) %}
                                 <tr class="{% if loop.last %}table-active fw-bold{% endif %}">
-                                {% for cell in row %}
-                                    <td class="{% if loop.last %}bg-dark bg-opacity-50{% endif %}">{{ cell }}</td>
+                                {% for col_index in range(tableau[row_index]|length) %}
+                                    {% set is_pivot = false %}
+                                    {% if result.pivot_history %}
+                                        {% for pivot in result.pivot_history %}
+                                            {% if pivot.pivot_row == row_index and pivot.pivot_col == col_index %}
+                                                {% set is_pivot = true %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                    <td class="{% if loop.last %}bg-dark bg-opacity-50{% endif %} {% if is_pivot %}bg-warning bg-opacity-50 fw-bold border border-warning{% endif %}">
+                                        {{ tableau[row_index][col_index] }}
+                                        {% if is_pivot %} ⭐{% endif %}
+                                    </td>
                                 {% endfor %}
                                 </tr>
                             {% endfor %}
@@ -203,6 +240,45 @@
                 </div>
             {% endfor %}
             </div>
+
+            {# ========== NEW PIVOT HISTORY SECTION ========== #}
+            {% if result.pivot_history %}
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-warning bg-opacity-25 border-warning">
+                    <h3 class="h5 mb-0">Historique des Opérations de Pivot</h3>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3"><strong>Nombre total d'itérations :</strong> {{ result.total_iterations }}</p>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover text-center align-middle">
+                            <thead class="table-warning">
+                                <tr>
+                                    <th>Itération</th>
+                                    <th>Variable Entrante</th>
+                                    <th>Variable Sortante</th>
+                                    <th>Élément Pivot</th>
+                                    <th>Position</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pivot in result.pivot_history %}
+                                <tr>
+                                    <td class="fw-bold">{{ pivot.iteration }}</td>
+                                    <td class="text-success fw-bold">{{ pivot.entering_var }}</td>
+                                    <td class="text-danger fw-bold">{{ pivot.leaving_var }}</td>
+                                    <td class="bg-warning bg-opacity-25 fw-bold">{{ pivot.pivot_element }}</td>
+                                    <td class="text-muted">(Ligne {{ pivot.pivot_row + 1 }}, Colonne {{ pivot.pivot_col + 1 }})</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {# ========== END PIVOT HISTORY SECTION ========== #}
+
             {% endif %}
         </div>
     </div>
